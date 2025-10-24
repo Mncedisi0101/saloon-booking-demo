@@ -1,32 +1,22 @@
-(function() {
+(async function() {
     // Check if supabase is already initialized
     if (window.supabaseClient) {
         console.log('Supabase client already initialized');
         return;
     }
 
-    // Get Supabase credentials from generated config
-    const getSupabaseConfig = () => {
-        if (window.SUPABASE_CONFIG) {
-            return window.SUPABASE_CONFIG;
-        }
-        
-        console.error('❌ Supabase configuration not found');
-        return null;
-    };
-
-    const config = getSupabaseConfig();
-    
-    if (!config) {
-        console.error('❌ Failed to load Supabase configuration');
-        return;
-    }
-    
-    console.log('Initializing Supabase client...');
-    
-    // Initialize Supabase client
     try {
-        const supabase = window.supabase.createClient(config.url, config.anonKey, {
+        // Fetch configuration from serverless function
+        const response = await fetch('/api/config');
+        const config = await response.json();
+        
+        if (!config.supabaseUrl || !config.supabaseAnonKey) {
+            throw new Error('Invalid configuration received');
+        }
+
+        console.log('Initializing Supabase client...');
+        
+        const supabase = window.supabase.createClient(config.supabaseUrl, config.supabaseAnonKey, {
             auth: {
                 autoRefreshToken: true,
                 persistSession: true,
