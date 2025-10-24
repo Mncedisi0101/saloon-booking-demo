@@ -1,5 +1,7 @@
+// Auth functionality
 class AuthManager {
     constructor() {
+        this.supabase = window.supabaseClient;
         this.init();
     }
 
@@ -9,7 +11,12 @@ class AuthManager {
     }
 
     async checkAuthState() {
-        const { data: { session } } = await supabase.auth.getSession();
+        if (!this.supabase) {
+            console.error('Supabase client not available');
+            return;
+        }
+
+        const { data: { session } } = await this.supabase.auth.getSession();
         if (session) {
             this.handleAuthenticatedUser(session.user);
         }
@@ -19,7 +26,6 @@ class AuthManager {
         const userRole = localStorage.getItem('userRole');
         const currentPage = window.location.pathname;
 
-        // Redirect logic based on user role and current page
         if (userRole === 'business' && !currentPage.includes('business-dashboard')) {
             window.location.href = 'pages/business-dashboard.html';
         } else if (userRole === 'customer' && !currentPage.includes('customer-dashboard')) {
@@ -29,73 +35,37 @@ class AuthManager {
         }
     }
 
-   attachEventListeners() {
-    // Business registration form
-    const businessForm = document.getElementById('businessRegisterForm');
-    if (businessForm) {
-        businessForm.addEventListener('submit', (e) => this.handleBusinessRegistration(e));
-    }
+    attachEventListeners() {
+        // Business registration form
+        const businessForm = document.getElementById('businessRegisterForm');
+        if (businessForm) {
+            businessForm.addEventListener('submit', (e) => this.handleBusinessRegistration(e));
+        }
 
-    // Business login form
-    const businessLoginForm = document.getElementById('businessLoginForm');
-    if (businessLoginForm) {
-        businessLoginForm.addEventListener('submit', (e) => this.handleLogin(e));
-    }
+        // Business login form
+        const businessLoginForm = document.getElementById('businessLoginForm');
+        if (businessLoginForm) {
+            businessLoginForm.addEventListener('submit', (e) => this.handleLogin(e));
+        }
 
-    // Customer registration form
-    const customerForm = document.getElementById('customerRegisterForm');
-    if (customerForm) {
-        customerForm.addEventListener('submit', (e) => this.handleCustomerRegistration(e));
-    }
+        // Customer registration form
+        const customerForm = document.getElementById('customerRegisterForm');
+        if (customerForm) {
+            customerForm.addEventListener('submit', (e) => this.handleCustomerRegistration(e));
+        }
 
-    // Customer login form (in modal)
-    const customerLoginForm = document.getElementById('customerLoginForm');
-    if (customerLoginForm) {
-        customerLoginForm.addEventListener('submit', (e) => this.handleLogin(e));
-    }
+        // Customer login form
+        const customerLoginForm = document.getElementById('customerLoginForm');
+        if (customerLoginForm) {
+            customerLoginForm.addEventListener('submit', (e) => this.handleLogin(e));
+        }
 
-    // Admin login form
-    const adminLoginForm = document.getElementById('adminLoginForm');
-    if (adminLoginForm) {
-        adminLoginForm.addEventListener('submit', (e) => this.handleLogin(e));
+        // Admin login form
+        const adminLoginForm = document.getElementById('adminLoginForm');
+        if (adminLoginForm) {
+            adminLoginForm.addEventListener('submit', (e) => this.handleLogin(e));
+        }
     }
-
-    // Toggle between login/register
-    const showLogin = document.getElementById('show-login');
-    const showRegister = document.getElementById('show-register');
-    
-    if (showLogin && showRegister) {
-        showLogin.addEventListener('click', (e) => {
-            e.preventDefault();
-            this.showLoginSection();
-        });
-        
-        showRegister.addEventListener('click', (e) => {
-            e.preventDefault();
-            this.showRegisterSection();
-        });
-    }
-}
-
-showLoginSection() {
-    const loginSection = document.getElementById('login-section');
-    const registerSection = document.getElementById('register-section');
-    
-    if (loginSection && registerSection) {
-        loginSection.classList.add('active');
-        registerSection.classList.remove('active');
-    }
-}
-
-showRegisterSection() {
-    const loginSection = document.getElementById('login-section');
-    const registerSection = document.getElementById('register-section');
-    
-    if (loginSection && registerSection) {
-        loginSection.classList.remove('active');
-        registerSection.classList.add('active');
-    }
-}
 
     async handleBusinessRegistration(e) {
         e.preventDefault();
@@ -109,14 +79,12 @@ showRegisterSection() {
             terms_accepted: formData.get('terms') === 'on'
         };
 
-        // Validate form
         if (!this.validateBusinessForm(businessData)) {
             return;
         }
 
         try {
-            // Create auth user
-            const { data: authData, error: authError } = await supabase.auth.signUp({
+            const { data: authData, error: authError } = await this.supabase.auth.signUp({
                 email: businessData.email,
                 password: businessData.password,
                 options: {
@@ -129,8 +97,7 @@ showRegisterSection() {
 
             if (authError) throw authError;
 
-            // Create business record
-            const { data: businessRecord, error: businessError } = await db.createBusiness({
+            const { data: businessRecord, error: businessError } = await window.db.createBusiness({
                 owner_name: businessData.owner_name,
                 business_name: businessData.business_name,
                 email: businessData.email,
@@ -141,7 +108,6 @@ showRegisterSection() {
 
             if (businessError) throw businessError;
 
-            // Store user role and redirect
             localStorage.setItem('userRole', 'business');
             localStorage.setItem('businessId', businessRecord.id);
             
@@ -172,8 +138,7 @@ showRegisterSection() {
         }
 
         try {
-            // Create auth user
-            const { data: authData, error: authError } = await supabase.auth.signUp({
+            const { data: authData, error: authError } = await this.supabase.auth.signUp({
                 email: customerData.email,
                 password: customerData.password,
                 options: {
@@ -187,8 +152,7 @@ showRegisterSection() {
 
             if (authError) throw authError;
 
-            // Create customer record
-            const { data: customerRecord, error: customerError } = await db.createCustomer({
+            const { data: customerRecord, error: customerError } = await window.db.createCustomer({
                 first_name: customerData.first_name,
                 last_name: customerData.last_name,
                 email: customerData.email,
@@ -221,20 +185,18 @@ showRegisterSection() {
         };
 
         try {
-            const { data, error } = await supabase.auth.signInWithPassword({
+            const { data, error } = await this.supabase.auth.signInWithPassword({
                 email: credentials.email,
                 password: credentials.password
             });
 
             if (error) throw error;
 
-            // Determine user role and redirect
             let userRole = credentials.userType;
             if (credentials.userType === 'admin') {
                 userRole = 'admin';
             } else {
-                // Check if user is business or customer
-                const businessCheck = await db.getBusinessByUserId(data.user.id);
+                const businessCheck = await window.db.getBusinessByUserId(data.user.id);
                 userRole = businessCheck.data ? 'business' : 'customer';
             }
 
@@ -256,73 +218,51 @@ showRegisterSection() {
 
     validateBusinessForm(data) {
         const errors = {};
-
-        // Owner name validation
         if (!data.owner_name || data.owner_name.length < 3) {
             errors.ownerName = 'Owner name must be at least 3 characters';
         }
-
-        // Business name validation
         if (!data.business_name || data.business_name.length < 3) {
             errors.businessName = 'Business name must be at least 3 characters';
         }
-
-        // Email validation
         if (!this.isValidEmail(data.email)) {
             errors.email = 'Please enter a valid email address';
         }
-
-        // Phone validation
         if (!this.isValidPhone(data.phone_number)) {
             errors.phoneNumber = 'Please enter a valid phone number with country code';
         }
-
-        // Password validation
         if (!this.isValidPassword(data.password)) {
             errors.password = 'Password must be at least 8 characters with 1 uppercase, 1 number, and 1 special character';
         }
-
-        // Terms validation
         if (!data.terms_accepted) {
             errors.terms = 'You must accept the terms and conditions';
         }
-
-        // Show errors
         this.displayFormErrors(errors);
         return Object.keys(errors).length === 0;
     }
 
     validateCustomerForm(data) {
         const errors = {};
-
         if (!data.first_name || data.first_name.length < 2) {
             errors.firstName = 'First name must be at least 2 characters';
         }
-
         if (!data.last_name || data.last_name.length < 2) {
             errors.lastName = 'Last name must be at least 2 characters';
         }
-
         if (!this.isValidEmail(data.email)) {
             errors.email = 'Please enter a valid email address';
         }
-
         if (!data.country) {
             errors.country = 'Please select your country';
         }
-
         if (!this.isValidPhone(data.phone_number)) {
             errors.phoneNumber = 'Please enter a valid phone number';
         }
-
         if (!this.isValidPassword(data.password)) {
             errors.password = 'Password must be at least 8 characters with 1 uppercase, 1 number, and 1 special character';
         }
-
         if (!data.terms_accepted) {
             errors.terms = 'You must accept the terms and conditions';
         }
-
         this.displayFormErrors(errors);
         return Object.keys(errors).length === 0;
     }
@@ -343,7 +283,6 @@ showRegisterSection() {
     }
 
     displayFormErrors(errors) {
-        // Clear previous errors
         document.querySelectorAll('.error-message').forEach(el => {
             el.style.display = 'none';
         });
@@ -351,7 +290,6 @@ showRegisterSection() {
             el.classList.remove('error');
         });
 
-        // Show new errors
         Object.keys(errors).forEach(field => {
             const errorElement = document.getElementById(`${field}Error`);
             const formGroup = document.querySelector(`[name="${field}"]`)?.closest('.form-group');
@@ -366,7 +304,7 @@ showRegisterSection() {
 
     async logout() {
         try {
-            await supabase.auth.signOut();
+            await this.supabase.auth.signOut();
             localStorage.removeItem('userRole');
             localStorage.removeItem('businessId');
             localStorage.removeItem('customerId');

@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SalonPro - Professional Salon Booking System</title>
-    <link rel="stylesheet" href="/styles/main.css">
-    <link rel="stylesheet" href="/styles/responsive.css">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/responsive.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
@@ -131,7 +131,17 @@
         </div>
     </footer>
 
-    <script src="/scripts/supabase-client.js"></script>
-    <script src="/scripts/auth.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+    // Initialize Supabase with environment variables
+    const SUPABASE_URL = 'https://your-project.supabase.co'; // Set in Vercel env
+    const SUPABASE_ANON_KEY = 'your-anon-key'; // Set in Vercel env
+
+    // Initialize Supabase
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    window.supabaseClient = supabase;
+
+    console.log('Supabase initialized');
+    </script>
 </body>
 </html>
