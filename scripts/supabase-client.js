@@ -10,6 +10,11 @@
     const getSupabaseConfig = () => {
         // These will be injected by Vercel during build
         // Do NOT hardcode credentials here
+        const process = { env: {
+            SUPABASE_URL: '%SUPABASE_URL%',
+            SUPABASE_ANON_KEY: '%SUPABASE_ANON_KEY%'
+        }
+        };  
         return {
             url: process.env.SUPABASE_URL,
             anonKey: process.env.SUPABASE_ANON_KEY
