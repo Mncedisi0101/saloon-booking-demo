@@ -1,4 +1,4 @@
-// Supabase Configuration - Single initialization point
+// Supabase Configuration - Secure initialization
 (function() {
     // Check if supabase is already initialized
     if (window.supabaseClient) {
@@ -6,19 +6,48 @@
         return;
     }
 
-    // Get Supabase credentials from environment or use defaults
+    // Get Supabase credentials from environment variables only
     const getSupabaseConfig = () => {
-        // For Vercel - environment variables are set in dashboard
-        // For local development - use defaults (you'll replace these)
+        // These will be injected by Vercel during build
+        // Do NOT hardcode credentials here
         return {
-            url: window.SUPABASE_URL || 'https://your-project.supabase.co',
-            anonKey: window.SUPABASE_ANON_KEY || 'your-anon-key'
+            url: process.env.SUPABASE_URL,
+            anonKey: process.env.SUPABASE_ANON_KEY
         };
     };
 
     const config = getSupabaseConfig();
     
     console.log('Initializing Supabase client...');
+    
+    // Validate that environment variables are set
+    if (!config.url || !config.anonKey) {
+        console.error('❌ Supabase environment variables are not set');
+        console.error('💡 Please set SUPABASE_URL and SUPABASE_ANON_KEY in Vercel environment variables');
+        
+        // Show user-friendly error message
+        if (typeof document !== 'undefined') {
+            const errorDiv = document.createElement('div');
+            errorDiv.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                background: #EF4444;
+                color: white;
+                padding: 1rem;
+                text-align: center;
+                z-index: 10000;
+                font-family: system-ui, sans-serif;
+            `;
+            errorDiv.innerHTML = `
+                <strong>Configuration Error:</strong> 
+                Supabase credentials are not configured. Please contact support.
+            `;
+            document.body.appendChild(errorDiv);
+        }
+        return;
+    }
     
     // Initialize Supabase client
     try {
@@ -28,22 +57,27 @@
                 persistSession: true,
                 detectSessionInUrl: true,
                 flowType: 'pkce'
+            },
+            global: {
+                headers: {
+                    'X-Client-Info': 'salonpro-booking-system'
+                }
             }
         });
 
         // Test connection
         supabase.auth.getSession().then(({ data, error }) => {
             if (error) {
-                console.warn('Supabase connection test failed:', error.message);
+                console.error('❌ Supabase connection failed:', error.message);
             } else {
-                console.log('Supabase connected successfully');
+                console.log('✅ Supabase connected successfully');
             }
         });
 
         // Set global variables
         window.supabaseClient = supabase;
 
-        // Database utility functions
+        // Database utility functions (same as before)
         window.db = {
             async createBusiness(businessData) {
                 const { data, error } = await supabase
@@ -223,9 +257,9 @@
             }
         };
 
-        console.log('Supabase client and DB utilities initialized successfully');
+        console.log('✅ Supabase client and DB utilities initialized successfully');
 
     } catch (error) {
-        console.error('Failed to initialize Supabase client:', error);
+        console.error('❌ Failed to initialize Supabase client:', error);
     }
 })();
