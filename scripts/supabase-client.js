@@ -1,4 +1,3 @@
-// Supabase Configuration - Secure initialization
 (function() {
     // Check if supabase is already initialized
     if (window.supabaseClient) {
@@ -6,53 +5,24 @@
         return;
     }
 
-    // Get Supabase credentials from environment variables only
+    // Get Supabase credentials from generated config
     const getSupabaseConfig = () => {
-        // These will be injected by Vercel during build
-        // Do NOT hardcode credentials here
-        const process = { env: {
-            SUPABASE_URL: '%SUPABASE_URL%',
-            SUPABASE_ANON_KEY: '%SUPABASE_ANON_KEY%'
+        if (window.SUPABASE_CONFIG) {
+            return window.SUPABASE_CONFIG;
         }
-        };  
-        return {
-            url: process.env.SUPABASE_URL,
-            anonKey: process.env.SUPABASE_ANON_KEY
-        };
+        
+        console.error('❌ Supabase configuration not found');
+        return null;
     };
 
     const config = getSupabaseConfig();
     
-    console.log('Initializing Supabase client...');
-    
-    // Validate that environment variables are set
-    if (!config.url || !config.anonKey) {
-        console.error('❌ Supabase environment variables are not set');
-        console.error('💡 Please set SUPABASE_URL and SUPABASE_ANON_KEY in Vercel environment variables');
-        
-        // Show user-friendly error message
-        if (typeof document !== 'undefined') {
-            const errorDiv = document.createElement('div');
-            errorDiv.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                background: #EF4444;
-                color: white;
-                padding: 1rem;
-                text-align: center;
-                z-index: 10000;
-                font-family: system-ui, sans-serif;
-            `;
-            errorDiv.innerHTML = `
-                <strong>Configuration Error:</strong> 
-                Supabase credentials are not configured. Please contact support.
-            `;
-            document.body.appendChild(errorDiv);
-        }
+    if (!config) {
+        console.error('❌ Failed to load Supabase configuration');
         return;
     }
+    
+    console.log('Initializing Supabase client...');
     
     // Initialize Supabase client
     try {
@@ -62,11 +32,6 @@
                 persistSession: true,
                 detectSessionInUrl: true,
                 flowType: 'pkce'
-            },
-            global: {
-                headers: {
-                    'X-Client-Info': 'salonpro-booking-system'
-                }
             }
         });
 
@@ -79,7 +44,7 @@
             }
         });
 
-        // Set global variables
+        // Set global variables and DB utilities (same as before)
         window.supabaseClient = supabase;
 
         // Database utility functions (same as before)
