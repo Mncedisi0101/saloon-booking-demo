@@ -2,6 +2,10 @@
 class AuthManager {
     constructor() {
         this.supabase = window.supabaseClient;
+        if (!this.supabase) {
+            console.error('Supabase client not available. Make sure supabase-client.js is loaded first.');
+            return;
+        }
         this.init();
     }
 
@@ -11,14 +15,13 @@ class AuthManager {
     }
 
     async checkAuthState() {
-        if (!this.supabase) {
-            console.error('Supabase client not available');
-            return;
-        }
-
-        const { data: { session } } = await this.supabase.auth.getSession();
-        if (session) {
-            this.handleAuthenticatedUser(session.user);
+        try {
+            const { data: { session } } = await this.supabase.auth.getSession();
+            if (session) {
+                this.handleAuthenticatedUser(session.user);
+            }
+        } catch (error) {
+            console.error('Error checking auth state:', error);
         }
     }
 
@@ -64,6 +67,42 @@ class AuthManager {
         const adminLoginForm = document.getElementById('adminLoginForm');
         if (adminLoginForm) {
             adminLoginForm.addEventListener('submit', (e) => this.handleLogin(e));
+        }
+
+        // Toggle between login/register
+        const showLogin = document.getElementById('show-login');
+        const showRegister = document.getElementById('show-register');
+        
+        if (showLogin && showRegister) {
+            showLogin.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.showLoginSection();
+            });
+            
+            showRegister.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.showRegisterSection();
+            });
+        }
+    }
+
+    showLoginSection() {
+        const loginSection = document.getElementById('login-section');
+        const registerSection = document.getElementById('register-section');
+        
+        if (loginSection && registerSection) {
+            loginSection.classList.add('active');
+            registerSection.classList.remove('active');
+        }
+    }
+
+    showRegisterSection() {
+        const loginSection = document.getElementById('login-section');
+        const registerSection = document.getElementById('register-section');
+        
+        if (loginSection && registerSection) {
+            loginSection.classList.remove('active');
+            registerSection.classList.add('active');
         }
     }
 
@@ -111,12 +150,14 @@ class AuthManager {
             localStorage.setItem('userRole', 'business');
             localStorage.setItem('businessId', businessRecord.id);
             
-            alert('Business registered successfully! Please check your email for verification.');
-            window.location.href = 'pages/business-dashboard.html';
+            this.showNotification('Business registered successfully! Please check your email for verification.', 'success');
+            setTimeout(() => {
+                window.location.href = 'pages/business-dashboard.html';
+            }, 2000);
 
         } catch (error) {
             console.error('Registration error:', error);
-            alert('Registration failed: ' + error.message);
+            this.showNotification('Registration failed: ' + error.message, 'error');
         }
     }
 
@@ -166,12 +207,14 @@ class AuthManager {
             localStorage.setItem('userRole', 'customer');
             localStorage.setItem('customerId', customerRecord.id);
             
-            alert('Registration successful! Please check your email for verification.');
-            window.location.href = 'pages/customer-dashboard.html';
+            this.showNotification('Registration successful! Please check your email for verification.', 'success');
+            setTimeout(() => {
+                window.location.href = 'pages/customer-dashboard.html';
+            }, 2000);
 
         } catch (error) {
             console.error('Registration error:', error);
-            alert('Registration failed: ' + error.message);
+            this.showNotification('Registration failed: ' + error.message, 'error');
         }
     }
 
@@ -193,26 +236,28 @@ class AuthManager {
             if (error) throw error;
 
             let userRole = credentials.userType;
-            if (credentials.userType === 'admin') {
-                userRole = 'admin';
-            } else {
+            if (credentials.userType !== 'admin') {
                 const businessCheck = await window.db.getBusinessByUserId(data.user.id);
                 userRole = businessCheck.data ? 'business' : 'customer';
             }
 
             localStorage.setItem('userRole', userRole);
             
-            if (userRole === 'business') {
-                window.location.href = 'pages/business-dashboard.html';
-            } else if (userRole === 'customer') {
-                window.location.href = 'pages/customer-dashboard.html';
-            } else if (userRole === 'admin') {
-                window.location.href = 'pages/admin-dashboard.html';
-            }
+            this.showNotification('Login successful! Redirecting...', 'success');
+            
+            setTimeout(() => {
+                if (userRole === 'business') {
+                    window.location.href = 'pages/business-dashboard.html';
+                } else if (userRole === 'customer') {
+                    window.location.href = 'pages/customer-dashboard.html';
+                } else if (userRole === 'admin') {
+                    window.location.href = 'pages/admin-dashboard.html';
+                }
+            }, 1000);
 
         } catch (error) {
             console.error('Login error:', error);
-            alert('Login failed: ' + error.message);
+            this.showNotification('Login failed: ' + error.message, 'error');
         }
     }
 
@@ -300,6 +345,41 @@ class AuthManager {
                 formGroup.classList.add('error');
             }
         });
+    }
+
+    showNotification(message, type = 'info') {
+        // Remove existing notifications
+        document.querySelectorAll('.notification').forEach(el => el.remove());
+
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.innerHTML = `
+            <span>${message}</span>
+            <button onclick="this.parentElement.remove()">&times;</button>
+        `;
+
+        notification.style.cssText = `
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: ${type === 'success' ? '#10B981' : type === 'error' ? '#EF4444' : '#3B82F6'};
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        `;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            if (notification.parentElement) {
+                notification.remove();
+            }
+        }, 5000);
     }
 
     async logout() {

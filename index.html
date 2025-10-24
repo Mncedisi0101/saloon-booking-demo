@@ -131,18 +131,13 @@
         </div>
     </footer>
 
-   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-    // Initialize Supabase with environment variables
-    const SUPABASE_URL = 'https://your-project.supabase.co'; // Set in Vercel env
-    const SUPABASE_ANON_KEY = 'your-anon-key'; // Set in Vercel env
+   <!-- Load Supabase CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    // Initialize Supabase
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    window.supabaseClient = supabase;
+<!-- Load our supabase client (only once) -->
+<script src="./scripts/supabase-client.js"></script>
 
-    console.log('Supabase initialized');
-    </script>
-     <script src="./scripts/auth.js"></script>
+<!-- Load auth functionality -->
+<script src="./scripts/auth.js"></script>
 </body>
 </html>
