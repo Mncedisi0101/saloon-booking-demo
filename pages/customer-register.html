@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Registration - SalonPro</title>
+    <link rel="stylesheet" href="../styles/main.css">
+    <link rel="stylesheet" href="../styles/responsive.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <div class="logo">
+                <h2><a href="../index.html" style="color: var(--primary-color); text-decoration: none;">SalonPro</a></h2>
+            </div>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="qr-scanner.html">Scan QR</a>
+            </div>
+        </nav>
+    </header>
+
+    <div class="form-container">
+        <h2>Create Customer Account</h2>
+        <p class="form-subtitle">Join SalonPro to book appointments easily</p>
+        
+        <form id="customerRegisterForm">
+            <div class="form-group">
+                <label for="firstName">First Name *</label>
+                <input type="text" id="firstName" name="firstName" required minlength="2">
+                <div class="error-message" id="firstNameError"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="lastName">Last Name *</label>
+                <input type="text" id="lastName" name="lastName" required minlength="2">
+                <div class="error-message" id="lastNameError"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address *</label>
+                <input type="email" id="email" name="email" required>
+                <div class="error-message" id="emailError"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="country">Country *</label>
+                <select id="country" name="country" required>
+                    <option value="">Select Country</option>
+                    <option value="Nigeria">Nigeria</option>
+                    <option value="South Africa">South Africa</option>
+                    <option value="Egypt">Egypt</option>
+                    <option value="Kenya">Kenya</option>
+                    <option value="Ghana">Ghana</option>
+                    <option value="Ethiopia">Ethiopia</option>
+                    <option value="Tanzania">Tanzania</option>
+                    <option value="Uganda">Uganda</option>
+                    <option value="Algeria">Algeria</option>
+                    <option value="Morocco">Morocco</option>
+                </select>
+                <div class="error-message" id="countryError"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="phoneNumber">Phone Number *</label>
+                <input type="tel" id="phoneNumber" name="phoneNumber" required>
+                <div class="error-message" id="phoneNumberError"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password *</label>
+                <input type="password" id="password" name="password" required minlength="8">
+                <div class="error-message" id="passwordError"></div>
+                <small>Must be at least 8 characters with 1 uppercase, 1 number, and 1 special character</small>
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password *</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required>
+                <div class="error-message" id="confirmPasswordError"></div>
+            </div>
+
+            <div class="form-group">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="terms" name="terms" required>
+                    <label for="terms">I agree to the <a href="#" style="color: var(--primary-color);">Terms & Conditions</a> *</label>
+                </div>
+                <div class="error-message" id="termsError"></div>
+            </div>
+
+            <button type="submit" class="btn-primary" style="width: 100%;">
+                Create Account
+            </button>
+
+            <p style="text-align: center; margin-top: 1rem;">
+                Already have an account? <a href="#" style="color: var(--primary-color);">Login here</a>
+            </p>
+        </form>
+    </div>
+
+    <script src="../scripts/supabase-client.js"></script>
+    <script src="../scripts/auth.js"></script>
+</body>
+</html>

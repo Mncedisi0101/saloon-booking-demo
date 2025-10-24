@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Dashboard - SalonPro</title>
+    <link rel="stylesheet" href="../styles/main.css">
+    <link rel="stylesheet" href="../styles/responsive.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <div class="logo">
+                <h2><a href="../index.html" style="color: var(--primary-color); text-decoration: none;">SalonPro</a></h2>
+            </div>
+            <div class="nav-links">
+                <div class="notifications">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">3</span>
+                </div>
+                <div class="user-menu">
+                    <span id="businessName">My Business</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <ul class="sidebar-menu">
+                <li><a href="#" class="active" data-page="dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a href="#" data-page="appointments"><i class="fas fa-calendar-alt"></i> Appointments</a></li>
+                <li><a href="#" data-page="services"><i class="fas fa-scissors"></i> Services</a></li>
+                <li><a href="#" data-page="stylists"><i class="fas fa-users"></i> Stylists</a></li>
+                <li><a href="#" data-page="qrcode"><i class="fas fa-qrcode"></i> QR Code</a></li>
+                <li><a href="#" data-page="business-hours"><i class="fas fa-clock"></i> Business Hours</a></li>
+                <li><a href="#" data-page="settings"><i class="fas fa-cog"></i> Settings</a></li>
+                <li><a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Page -->
+            <div id="dashboard-page" class="page active">
+                <h1>Business Dashboard</h1>
+                <div class="stats-grid" id="statsGrid">
+                    <!-- Stats will be loaded dynamically -->
+                </div>
+
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3>Recent Appointments</h3>
+                        <button class="btn-primary btn-sm" onclick="businessDashboard.showPage('appointments')">
+                            View All
+                        </button>
+                    </div>
+                    <table class="table" id="recentAppointmentsTable">
+                        <thead>
+                            <tr>
+                                <th>Customer</th>
+                                <th>Service</th>
+                                <th>Date & Time</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Appointments will be loaded dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Appointments Page -->
+            <div id="appointments-page" class="page">
+                <div class="page-header">
+                    <h1>Appointments</h1>
+                    <button class="btn-primary" id="addAppointmentBtn">
+                        <i class="fas fa-plus"></i> Add Appointment
+                    </button>
+                </div>
+
+                <div class="filters">
+                    <select id="statusFilter">
+                        <option value="">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="confirmed">Confirmed</option>
+                        <option value="completed">Completed</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                    <input type="date" id="dateFromFilter" placeholder="From Date">
+                    <input type="date" id="dateToFilter" placeholder="To Date">
+                    <button class="btn-primary btn-sm" id="applyFilters">Apply</button>
+                </div>
+
+                <div class="table-container">
+                    <table class="table" id="appointmentsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Customer</th>
+                                <th>Service</th>
+                                <th>Stylist</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Appointments will be loaded dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Services Page -->
+            <div id="services-page" class="page">
+                <div class="page-header">
+                    <h1>Services</h1>
+                    <button class="btn-primary" id="addServiceBtn">
+                        <i class="fas fa-plus"></i> Add Service
+                    </button>
+                </div>
+
+                <div class="table-container">
+                    <table class="table" id="servicesTable">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>Duration</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Services will be loaded dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Stylists Page -->
+            <div id="stylists-page" class="page">
+                <div class="page-header">
+                    <h1>Stylists</h1>
+                    <button class="btn-primary" id="addStylistBtn">
+                        <i class="fas fa-plus"></i> Add Stylist
+                    </button>
+                </div>
+
+                <div class="cards-grid" id="stylistsGrid">
+                    <!-- Stylists will be loaded as cards -->
+                </div>
+            </div>
+
+            <!-- QR Code Page -->
+            <div id="qrcode-page" class="page">
+                <div class="qr-container">
+                    <h1>Your QR Code</h1>
+                    <p>Share this QR code with customers to book appointments</p>
+                    
+                    <div class="qr-code" id="qrCodeContainer">
+                        <!-- QR Code will be generated here -->
+                    </div>
+                    
+                    <div class="qr-actions">
+                        <button class="btn-primary" id="downloadQR">
+                            <i class="fas fa-download"></i> Download PNG
+                        </button>
+                        <button class="btn-secondary" id="printQR">
+                            <i class="fas fa-print"></i> Print
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add/Edit Modals -->
+            <div id="serviceModal" class="modal">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <h3 id="serviceModalTitle">Add Service</h3>
+                    <form id="serviceForm">
+                        <input type="hidden" id="serviceId">
+                        <div class="form-group">
+                            <label for="serviceName">Service Name *</label>
+                            <input type="text" id="serviceName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="serviceCategory">Category *</label>
+                            <select id="serviceCategory" required>
+                                <option value="">Select Category</option>
+                                <option value="Haircut">Haircut</option>
+                                <option value="Coloring">Coloring</option>
+                                <option value="Styling">Styling</option>
+                                <option value="Treatment">Treatment</option>
+                                <option value="Extensions">Extensions</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="serviceDescription">Description</label>
+                            <textarea id="serviceDescription" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="serviceDuration">Duration (minutes) *</label>
+                            <input type="number" id="serviceDuration" required min="5">
+                        </div>
+                        <div class="form-group">
+                            <label for="servicePrice">Price *</label>
+                            <input type="number" id="servicePrice" required min="0" step="0.01">
+                        </div>
+                        <div class="form-group checkbox-group">
+                            <input type="checkbox" id="serviceActive" checked>
+                            <label for="serviceActive">Active</label>
+                        </div>
+                        <button type="submit" class="btn-primary">Save Service</button>
+                    </form>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="../scripts/supabase-client.js"></script>
+    <script src="../scripts/auth.js"></script>
+    <script src="../scripts/business-dashboard.js"></script>
+</body>
+</html>

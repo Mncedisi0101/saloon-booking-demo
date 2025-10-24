@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SalonPro - Professional Salon Booking System</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/responsive.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <div class="logo">
+                <h2>SalonPro</h2>
+            </div>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#how-it-works">How It Works</a>
+                <button class="btn-admin" onclick="location.href='pages/admin-login.html'">
+                    <i class="fas fa-lock"></i> Admin Login
+                </button>
+            </div>
+            <div class="mobile-menu">
+                <i class="fas fa-bars"></i>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Streamline Your Salon Business</h1>
+            <p>Professional booking system for modern salons. Manage appointments, services, and customers effortlessly.</p>
+            <div class="hero-buttons">
+                <button class="btn-primary" onclick="location.href='pages/business-register.html'">
+                    Register Your Business
+                </button>
+                <button class="btn-secondary" onclick="location.href='pages/qr-code-scanner.html'">
+                    <i class="fas fa-qrcode"></i> Scan QR Code to Book
+                </button>
+            </div>
+        </div>
+        <div class="hero-image">
+            <img src="assets/images/hero-salon.svg" alt="Salon Booking System">
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2>Powerful Features for Your Salon</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-qrcode"></i>
+                    <h3>QR Code Booking</h3>
+                    <p>Customers can scan QR codes to book appointments instantly</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-calendar-alt"></i>
+                    <h3>Smart Scheduling</h3>
+                    <p>Manage appointments with real-time availability</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-chart-line"></i>
+                    <h3>Business Analytics</h3>
+                    <p>Track performance with detailed reports and insights</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-users"></i>
+                    <h3>Customer Management</h3>
+                    <p>Maintain customer profiles and booking history</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <h2>How It Works</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Business Registration</h3>
+                    <p>Salon owners register and set up their business profile</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>QR Code Generation</h3>
+                    <p>Generate unique QR codes for your salon</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Customer Booking</h3>
+                    <p>Customers scan QR code to book appointments</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>Manage & Grow</h3>
+                    <p>Track appointments and grow your business</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>SalonPro</h3>
+                    <p>Professional salon booking system for modern businesses.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p>Email: support@salonpro.com</p>
+                    <p>Phone: +1 (555) 123-4567</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Support</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 SalonPro. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="scripts/supabase-client.js"></script>
+    <script src="scripts/auth.js"></script>
+</body>
+</html>

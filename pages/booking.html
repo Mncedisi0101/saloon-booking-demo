@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Appointment - SalonPro</title>
+    <link rel="stylesheet" href="../styles/main.css">
+    <link rel="stylesheet" href="../styles/responsive.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <div class="logo">
+                <h2><a href="../index.html" style="color: var(--primary-color); text-decoration: none;">SalonPro</a></h2>
+            </div>
+            <div class="nav-links">
+                <a href="customer-register.html">Register</a>
+                <a href="customer-dashboard.html">Dashboard</a>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="booking-container">
+            <h1>Book Your Appointment</h1>
+            <p id="businessWelcome">Loading salon information...</p>
+
+            <div id="booking-flow">
+                <!-- Booking steps will be loaded here -->
+            </div>
+
+            <div id="login-prompt" class="login-prompt" style="display: none;">
+                <div class="prompt-content">
+                    <h3>Login Required</h3>
+                    <p>Please log in or create an account to book an appointment</p>
+                    <div class="prompt-actions">
+                        <button class="btn-primary" onclick="window.location.href='customer-register.html'">
+                            Create Account
+                        </button>
+                        <button class="btn-secondary" onclick="window.location.href='customer-login.html'">
+                            Login
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../scripts/supabase-client.js"></script>
+    <script>
+        // Simple booking page that redirects to customer dashboard
+        // This page is primarily for QR code redirects
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Get business ID from URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const businessId = urlParams.get('business');
+
+            if (businessId) {
+                localStorage.setItem('selectedBusinessId', businessId);
+                
+                // Check if user is logged in
+                const { data: { session } } = await supabase.auth.getSession();
+                
+                if (session) {
+                    // Redirect to customer dashboard booking page
+                    window.location.href = 'customer-dashboard.html?page=book-appointment';
+                } else {
+                    // Show login prompt
+                    document.getElementById('login-prompt').style.display = 'block';
+                    document.getElementById('booking-flow').style.display = 'none';
+                    
+                    // Try to load business info
+                    try {
+                        const { data: business } = await supabase
+                            .from('businesses')
+                            .select('business_name')
+                            .eq('id', businessId)
+                            .single();
+                            
+                        if (business) {
+                            document.getElementById('businessWelcome').textContent = 
+                                `Booking appointment at ${business.business_name}`;
+                        }
+                    } catch (error) {
+                        console.error('Error loading business info:', error);
+                    }
+                }
+            } else {
+                document.getElementById('businessWelcome').textContent = 
+                    'No salon selected. Please scan a QR code or select a salon.';
+                document.getElementById('booking-flow').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-qrcode"></i>
+                        <h3>No Salon Selected</h3>
+                        <p>Please scan a salon's QR code or go to your dashboard to select a salon.</p>
+                        <div class="action-buttons">
+                            <button class="btn-primary" onclick="window.location.href='qr-code-scanner.html'">
+                                Scan QR Code
+                            </button>
+                            <button class="btn-secondary" onclick="window.location.href='customer-dashboard.html'">
+                                Go to Dashboard
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>

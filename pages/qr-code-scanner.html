@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scan QR Code - SalonPro</title>
+    <link rel="stylesheet" href="../styles/main.css">
+    <link rel="stylesheet" href="../styles/responsive.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <div class="logo">
+                <h2><a href="../index.html" style="color: var(--primary-color); text-decoration: none;">SalonPro</a></h2>
+            </div>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="customer-register.html">Register</a>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="qr-scanner-container">
+            <h1>Scan Salon QR Code</h1>
+            <p>Point your camera at a salon's QR code to book an appointment</p>
+
+            <div class="scanner-section">
+                <div class="scanner-wrapper">
+                    <div id="scanner-view">
+                        <video id="qr-video" width="100%" height="300" style="border-radius: 12px;"></video>
+                        <canvas id="qr-canvas" style="display: none;"></canvas>
+                    </div>
+                    <div class="scanner-overlay">
+                        <div class="scanner-frame"></div>
+                    </div>
+                </div>
+
+                <div class="scanner-result" id="scanner-result">
+                    <!-- Scan results will appear here -->
+                </div>
+            </div>
+
+            <div class="manual-input">
+                <h3>Or Enter Business ID Manually</h3>
+                <div class="form-group">
+                    <input type="text" id="businessIdInput" placeholder="Enter Business ID">
+                    <button class="btn-primary" id="manualSubmit">Submit</button>
+                </div>
+            </div>
+
+            <div class="scanner-actions">
+                <button class="btn-secondary" id="toggle-camera">
+                    <i class="fas fa-sync-alt"></i> Switch Camera
+                </button>
+                <button class="btn-primary" id="start-scanner">
+                    <i class="fas fa-camera"></i> Start Scanner
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../scripts/supabase-client.js"></script>
+    <script src="../scripts/qr-scanner.js"></script>
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Portal - SalonPro</title>
+    <link rel="stylesheet" href="../styles/main.css">
+    <link rel="stylesheet" href="../styles/auth.css">
+    <link rel="stylesheet" href="../styles/responsive.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-logo">
+                    <i class="fas fa-scissors"></i>
+                    <h1>SalonPro</h1>
+                </div>
+                <p class="auth-subtitle">Business Portal</p>
+            </div>
+
+            <!-- Login Form -->
+            <div id="login-section" class="auth-section active">
+                <form id="businessLoginForm" class="auth-form" data-type="login">
+                    <input type="hidden" name="userType" value="business">
+                    
+                    <div class="form-group">
+                        <label for="loginEmail">Email Address</label>
+                        <input type="email" id="loginEmail" name="email" required placeholder="Enter your email">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" name="password" required placeholder="Enter your password">
+                    </div>
+
+                    <div class="login-options">
+                        <div class="remember-me">
+                            <input type="checkbox" id="rememberMe" name="rememberMe">
+                            <label for="rememberMe">Remember me</label>
+                        </div>
+                        <a href="#" class="forgot-password">Forgot Password?</a>
+                    </div>
+
+                    <button type="submit" class="auth-button">
+                        <span class="button-text">Sign In</span>
+                    </button>
+                </form>
+
+                <div class="auth-footer">
+                    <p>Don't have a business account?</p>
+                    <a href="#" id="show-register">Register your business</a>
+                </div>
+            </div>
+
+            <!-- Registration Form -->
+            <div id="register-section" class="auth-section">
+                <form id="businessRegisterForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="ownerName">Business Owner Name *</label>
+                        <input type="text" id="ownerName" name="ownerName" required minlength="3" placeholder="Enter owner's full name">
+                        <div class="error-message" id="ownerNameError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="businessName">Business Name *</label>
+                        <input type="text" id="businessName" name="businessName" required minlength="3" placeholder="Enter business name">
+                        <div class="error-message" id="businessNameError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email Address *</label>
+                        <input type="email" id="email" name="email" required placeholder="Enter business email">
+                        <div class="error-message" id="emailError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phoneNumber">Phone Number *</label>
+                        <input type="tel" id="phoneNumber" name="phoneNumber" required placeholder="+1234567890">
+                        <div class="error-message" id="phoneNumberError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password *</label>
+                        <input type="password" id="password" name="password" required minlength="8" placeholder="Create a password">
+                        <div class="error-message" id="passwordError"></div>
+                        <div class="password-strength">
+                            <div class="strength-bar">
+                                <div class="strength-fill" id="passwordStrength"></div>
+                            </div>
+                        </div>
+                        <small>Must be at least 8 characters with 1 uppercase, 1 number, and 1 special character</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password *</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="Confirm your password">
+                        <div class="error-message" id="confirmPasswordError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="terms" name="terms" required>
+                            <label for="terms">I agree to the <a href="#" style="color: var(--primary-color);">Terms & Conditions</a> and <a href="#" style="color: var(--primary-color);">Privacy Policy</a> *</label>
+                        </div>
+                        <div class="error-message" id="termsError"></div>
+                    </div>
+
+                    <button type="submit" class="auth-button">
+                        <span class="button-text">Register Business</span>
+                    </button>
+                </form>
+
+                <div class="auth-footer">
+                    <p>Already have an account?</p>
+                    <a href="#" id="show-login">Sign in here</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../scripts/supabase-client.js"></script>
+    <script src="../scripts/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginSection = document.getElementById('login-section');
+            const registerSection = document.getElementById('register-section');
+            const showLogin = document.getElementById('show-login');
+            const showRegister = document.getElementById('show-register');
+
+            function showSection(section) {
+                loginSection.classList.remove('active');
+                registerSection.classList.remove('active');
+                section.classList.add('active');
+            }
+
+            showLogin?.addEventListener('click', (e) => {
+                e.preventDefault();
+                showSection(loginSection);
+            });
+
+            showRegister?.addEventListener('click', (e) => {
+                e.preventDefault();
+                showSection(registerSection);
+            });
+
+            // Password strength indicator
+            const passwordInput = document.getElementById('password');
+            const strengthFill = document.getElementById('passwordStrength');
+
+            if (passwordInput && strengthFill) {
+                passwordInput.addEventListener('input', function() {
+                    const password = this.value;
+                    let strength = 0;
+                    
+                    if (password.length >= 8) strength++;
+                    if (/[A-Z]/.test(password)) strength++;
+                    if (/[0-9]/.test(password)) strength++;
+                    if (/[@$!%*?&]/.test(password)) strength++;
+                    
+                    strengthFill.className = 'strength-fill';
+                    if (strength === 0) {
+                        strengthFill.style.width = '0%';
+                    } else if (strength === 1) {
+                        strengthFill.classList.add('strength-weak');
+                    } else if (strength === 2 || strength === 3) {
+                        strengthFill.classList.add('strength-medium');
+                    } else {
+                        strengthFill.classList.add('strength-strong');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
